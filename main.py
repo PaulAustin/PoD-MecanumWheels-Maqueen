@@ -13,10 +13,23 @@ def on_forever():
     global xp, yp
     xp = Math.map(pins.analog_read_pin(AnalogPin.P1), 0, 1023, -100, 100)
     yp = Math.map(pins.analog_read_pin(AnalogPin.P2), 0, 1023, -100, 100)
+    
+    # Is there a forward/backward component?
+    serial.write_numbers([xp, yp])
     if abs(yp) > 15:
-        serial.write_numbers([xp, yp])
-        radio.send_number(yp)
+        radio.send_value("FB", yp)
     else:
-        serial.write_string("")
         radio.send_number(0)
+        radio.send_value("FB", 0)
+
+    # Is there a forward/backward component?
+    if abs(xp) > 15:
+        radio.send_value("FB", yp)
+    else:
+        radio.send_number(0)
+        radio.send_value("FB", 0)
+
+
+
+
 basic.forever(on_forever)
